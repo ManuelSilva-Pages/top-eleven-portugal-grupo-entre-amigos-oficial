@@ -1,0 +1,217 @@
+﻿<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Top Eleven Portugal – Ranking Oficial</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f4f4f4;
+    }
+
+    header {
+      background-color: #1f2933;
+      color: white;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    header img {
+      height: 80px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    header p {
+      margin: 5px 0 0;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    #data-atualizacao {
+      font-size: 13px;
+      opacity: 0.85;
+      margin-top: 4px;
+    }
+
+    nav {
+      background-color: #ffffff;
+      padding: 10px;
+      display: flex;
+      gap: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    nav button {
+      padding: 10px 16px;
+      border: none;
+      background-color: #1f2933;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    nav button:hover {
+      background-color: #374151;
+    }
+
+    section {
+      display: none;
+      padding: 20px;
+    }
+
+    section.active {
+      display: block;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      padding: 8px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+
+    th {
+      background-color: #e5e7eb;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      header img {
+        height: 60px;
+      }
+
+      nav {
+        flex-direction: column;
+      }
+
+      table {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <img src="logo.png" alt="Top Eleven Portugal">
+  <div>
+    <h1>Top Eleven Portugal</h1>
+    <p>Ranking oficial do grupo “Top Eleven Portugal – Grupo Entre Amigos [OFICIAL]”</p>
+    <div id="data-atualizacao">Última atualização: a carregar...</div>
+  </div>
+</header>
+
+<nav>
+  <button onclick="mostrar('suprema')">Suprema</button>
+  <button onclick="mostrar('diamante')">Diamante</button>
+  <button onclick="mostrar('top100')">Top 100</button>
+</nav>
+
+<section id="suprema" class="active">
+  <h2>Divisão Suprema</h2>
+  <div id="suprema-tabela">A carregar tabela...</div>
+</section>
+
+<section id="diamante">
+  <h2>Divisão Diamante</h2>
+  <div id="diamante-tabela">A carregar tabela...</div>
+</section>
+
+<section id="top100">
+  <h2>Top 100 Associações</h2>
+  <div id="top100-tabela">A carregar tabela...</div>
+</section>
+
+<script>
+const SHEET_ID = "1V0pgh17X-6oQnZyZ1Wo8YiQBCadTXw5DK8YIGjtxzBI";
+
+function mostrar(id) {
+  document.querySelectorAll("section").forEach(sec => {
+    sec.classList.remove("active");
+  });
+  document.getElementById(id).classList.add("active");
+}
+
+function carregarTabela(aba, containerId) {
+  fetch(`https://opensheet.elk.sh/${SHEET_ID}/${encodeURIComponent(aba)}`)
+    .then(res => res.json())
+    .then(dados => {
+      if (!Array.isArray(dados)) throw new Error();
+
+      dados.sort((a, b) => Number(b.Pontos) - Number(a.Pontos));
+
+      let html = `
+        <table>
+          <tr>
+            <th>Posição</th>
+            <th>Associação</th>
+            <th>Tag</th>
+            <th>Pontos</th>
+          </tr>
+      `;
+
+      dados.forEach(linha => {
+        html += `
+          <tr>
+            <td>${linha.Posicao}</td>
+            <td>${linha.Associacao}</td>
+            <td>${linha.Tag || ""}</td>
+            <td>${linha.Pontos}</td>
+          </tr>
+        `;
+      });
+
+      html += "</table>";
+      document.getElementById(containerId).innerHTML = html;
+    })
+    .catch(() => {
+      document.getElementById(containerId).innerHTML =
+        "Erro ao carregar tabela.";
+    });
+}
+
+function carregarData() {
+  fetch(`https://opensheet.elk.sh/${SHEET_ID}/Info`)
+    .then(res => res.json())
+    .then(dados => {
+      if (Array.isArray(dados) && dados.length > 0) {
+        document.getElementById("data-atualizacao").innerText =
+          "Última atualização: " + dados[0].Atualizacao;
+      } else {
+        document.getElementById("data-atualizacao").innerText =
+          "Última atualização: indisponível";
+      }
+    })
+    .catch(() => {
+      document.getElementById("data-atualizacao").innerText =
+        "Última atualização: indisponível";
+    });
+}
+
+carregarTabela("Suprema", "suprema-tabela");
+carregarTabela("Diamante", "diamante-tabela");
+carregarTabela("Top100_API", "top100-tabela");
+carregarData();
+</script>
+
+</body>
+</html>
