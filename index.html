@@ -57,7 +57,6 @@
       cursor: pointer;
       font-size: 14px;
       border-radius: 6px;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
     .btn-suprema { background-color: #1e3a8a; }
@@ -65,8 +64,7 @@
     .btn-top100 { background-color: #1e3a8a; }
 
     nav button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      opacity: 0.9;
     }
 
     section {
@@ -78,9 +76,8 @@
       display: block;
     }
 
-    .total-associacoes {
-      margin: 8px 0 12px;
-      font-size: 14px;
+    .total-assoc {
+      margin-bottom: 10px;
       font-weight: bold;
       color: #374151;
     }
@@ -101,25 +98,32 @@
       background-color: #e5e7eb;
     }
 
-    /* TOP 3 melhorado */
-    .top-1, .top-2, .top-3 {
-      font-weight: bold;
-      font-size: 15px;
-    }
-
+    /* TOP 3 MELHORADO */
     .top-1 {
       background-color: #ffd700;
-      border-left: 6px solid #c9a400;
+      font-weight: bold;
+      font-size: 15px;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.25);
     }
 
     .top-2 {
       background-color: #c0c0c0;
-      border-left: 6px solid #9ca3af;
+      font-weight: bold;
+      font-size: 15px;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.25);
     }
 
     .top-3 {
       background-color: #cd7f32;
-      border-left: 6px solid #9a5a1f;
+      font-weight: bold;
+      font-size: 15px;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.25);
+    }
+
+    /* ASSOCIAÇÕES GEA */
+    .oficial-gea td {
+      border-left: 6px solid #16a34a;
+      background-color: #ecfdf5;
     }
 
     @media (max-width: 768px) {
@@ -162,19 +166,19 @@
 
 <section id="suprema" class="active">
   <h2>Divisão Suprema</h2>
-  <div id="suprema-total" class="total-associacoes"></div>
+  <div class="total-assoc" id="suprema-total"></div>
   <div id="suprema-tabela">A carregar tabela...</div>
 </section>
 
 <section id="diamante">
   <h2>Divisão Diamante</h2>
-  <div id="diamante-total" class="total-associacoes"></div>
+  <div class="total-assoc" id="diamante-total"></div>
   <div id="diamante-tabela">A carregar tabela...</div>
 </section>
 
 <section id="top100">
   <h2>Top 100 Associações</h2>
-  <div id="top100-total" class="total-associacoes"></div>
+  <div class="total-assoc" id="top100-total"></div>
   <div id="top100-tabela">A carregar tabela...</div>
 </section>
 
@@ -211,9 +215,17 @@ function carregarTabela(aba, containerId, totalId) {
 
       dados.forEach((linha, index) => {
         let classe = "";
+
         if (index === 0) classe = "top-1";
         else if (index === 1) classe = "top-2";
         else if (index === 2) classe = "top-3";
+
+        if (
+          linha.Associacao &&
+          linha.Associacao.trim().toUpperCase().startsWith("GEA")
+        ) {
+          classe += " oficial-gea";
+        }
 
         html += `
           <tr class="${classe}">
