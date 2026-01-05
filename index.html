@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
@@ -53,14 +53,20 @@
     nav button {
       padding: 10px 16px;
       border: none;
-      background-color: #1f2933;
       color: white;
       cursor: pointer;
       font-size: 14px;
+      border-radius: 6px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
+    .btn-suprema { background-color: #1e3a8a; }
+    .btn-diamante { background-color: #ec4899; }
+    .btn-top100 { background-color: #1e3a8a; }
+
     nav button:hover {
-      background-color: #374151;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
 
     section {
@@ -70,6 +76,13 @@
 
     section.active {
       display: block;
+    }
+
+    .total-associacoes {
+      margin: 8px 0 12px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #374151;
     }
 
     table {
@@ -86,6 +99,27 @@
 
     th {
       background-color: #e5e7eb;
+    }
+
+    /* TOP 3 melhorado */
+    .top-1, .top-2, .top-3 {
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .top-1 {
+      background-color: #ffd700;
+      border-left: 6px solid #c9a400;
+    }
+
+    .top-2 {
+      background-color: #c0c0c0;
+      border-left: 6px solid #9ca3af;
+    }
+
+    .top-3 {
+      background-color: #cd7f32;
+      border-left: 6px solid #9a5a1f;
     }
 
     @media (max-width: 768px) {
@@ -115,29 +149,32 @@
   <img src="logo.png" alt="Top Eleven Portugal">
   <div>
     <h1>Top Eleven Portugal</h1>
-    <p>Ranking oficial do grupo Top Eleven Portugal – Grupo Entre Amigos [OFICIAL]</p>
+    <p>Ranking oficial do grupo Top Eleven Portugal - Grupo Entre Amigos [OFICIAL]</p>
     <div id="data-atualizacao">Última atualização: a carregar...</div>
   </div>
 </header>
 
 <nav>
-  <button onclick="mostrar('suprema')">Suprema</button>
-  <button onclick="mostrar('diamante')">Diamante</button>
-  <button onclick="mostrar('top100')">Top 100</button>
+  <button class="btn-suprema" onclick="mostrar('suprema')">Suprema</button>
+  <button class="btn-diamante" onclick="mostrar('diamante')">Diamante</button>
+  <button class="btn-top100" onclick="mostrar('top100')">Top 100</button>
 </nav>
 
 <section id="suprema" class="active">
   <h2>Divisão Suprema</h2>
+  <div id="suprema-total" class="total-associacoes"></div>
   <div id="suprema-tabela">A carregar tabela...</div>
 </section>
 
 <section id="diamante">
   <h2>Divisão Diamante</h2>
+  <div id="diamante-total" class="total-associacoes"></div>
   <div id="diamante-tabela">A carregar tabela...</div>
 </section>
 
 <section id="top100">
   <h2>Top 100 Associações</h2>
+  <div id="top100-total" class="total-associacoes"></div>
   <div id="top100-tabela">A carregar tabela...</div>
 </section>
 
@@ -151,13 +188,16 @@ function mostrar(id) {
   document.getElementById(id).classList.add("active");
 }
 
-function carregarTabela(aba, containerId) {
+function carregarTabela(aba, containerId, totalId) {
   fetch(`https://opensheet.elk.sh/${SHEET_ID}/${encodeURIComponent(aba)}`)
     .then(res => res.json())
     .then(dados => {
       if (!Array.isArray(dados)) throw new Error();
 
       dados.sort((a, b) => Number(b.Pontos) - Number(a.Pontos));
+
+      document.getElementById(totalId).innerText =
+        `Total de associações nesta divisão: ${dados.length}`;
 
       let html = `
         <table>
@@ -169,10 +209,15 @@ function carregarTabela(aba, containerId) {
           </tr>
       `;
 
-      dados.forEach(linha => {
+      dados.forEach((linha, index) => {
+        let classe = "";
+        if (index === 0) classe = "top-1";
+        else if (index === 1) classe = "top-2";
+        else if (index === 2) classe = "top-3";
+
         html += `
-          <tr>
-            <td>${linha.Posicao}</td>
+          <tr class="${classe}">
+            <td>${index + 1}</td>
             <td>${linha.Associacao}</td>
             <td>${linha.Tag || ""}</td>
             <td>${linha.Pontos}</td>
@@ -207,12 +252,11 @@ function carregarData() {
     });
 }
 
-carregarTabela("Suprema", "suprema-tabela");
-carregarTabela("Diamante", "diamante-tabela");
-carregarTabela("Top100_API", "top100-tabela");
+carregarTabela("Suprema", "suprema-tabela", "suprema-total");
+carregarTabela("Diamante", "diamante-tabela", "diamante-total");
+carregarTabela("Top100_API", "top100-tabela", "top100-total");
 carregarData();
 </script>
 
 </body>
-
 </html>
