@@ -57,51 +57,53 @@
       cursor: pointer;
       font-size: 14px;
       border-radius: 6px;
-      transition: all 0.25s ease;
+      transition: all 0.3s ease;
     }
 
     .btn-suprema { background-color: #1e3a8a; }
     .btn-diamante { background-color: #ec4899; }
 
     .btn-top100 {
-      background: linear-gradient(135deg, #facc15, #eab308, #ca8a04);
+      background: linear-gradient(135deg, #facc15, #ca8a04);
       color: #1f2933;
       font-weight: bold;
     }
 
     nav button.active {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-      opacity: 1;
-    }
-
-    nav button:not(.active) {
-      opacity: 0.85;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.25);
+      transform: translateY(-1px);
     }
 
     section {
       display: none;
       padding: 20px;
-      animation: fadeSlide 0.35s ease;
+      animation: fade 0.3s ease;
     }
 
     section.active {
       display: block;
     }
 
-    @keyframes fadeSlide {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    @keyframes fade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .search-box {
+      margin-bottom: 10px;
+    }
+
+    .search-box input {
+      width: 100%;
+      max-width: 300px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
     }
 
     .total-assoc {
-      margin-bottom: 10px;
+      margin: 10px 0;
       font-weight: bold;
       color: #374151;
     }
@@ -123,17 +125,28 @@
     }
 
     /* TOP 3 */
-    .top-1, .top-2, .top-3 {
+    .top-1 {
+      background-color: #ffd700;
       font-weight: bold;
       font-size: 15px;
       box-shadow: inset 0 0 6px rgba(0,0,0,0.25);
     }
 
-    .top-1 { background-color: #ffd700; }
-    .top-2 { background-color: #c0c0c0; }
-    .top-3 { background-color: #cd7f32; }
+    .top-2 {
+      background-color: #c0c0c0;
+      font-weight: bold;
+      font-size: 15px;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.25);
+    }
 
-    /* ASSOCIAÇÕES GEA */
+    .top-3 {
+      background-color: #cd7f32;
+      font-weight: bold;
+      font-size: 15px;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.25);
+    }
+
+    /* GEA */
     .oficial-gea td {
       border-left: 6px solid #16a34a;
       background-color: #ecfdf5;
@@ -179,120 +192,124 @@
 
 <section id="suprema" class="active">
   <h2>Divisão Suprema</h2>
+  <div class="search-box">
+    <input type="text" placeholder="Pesquisar associação..." oninput="filtrar(this, 'suprema')">
+  </div>
   <div class="total-assoc" id="suprema-total"></div>
-  <div id="suprema-tabela">A carregar tabela...</div>
+  <div id="suprema-tabela"></div>
 </section>
 
 <section id="diamante">
   <h2>Divisão Diamante</h2>
+  <div class="search-box">
+    <input type="text" placeholder="Pesquisar associação..." oninput="filtrar(this, 'diamante')">
+  </div>
   <div class="total-assoc" id="diamante-total"></div>
-  <div id="diamante-tabela">A carregar tabela...</div>
+  <div id="diamante-tabela"></div>
 </section>
 
 <section id="top100">
   <h2>Top 100 Associações</h2>
+  <div class="search-box">
+    <input type="text" placeholder="Pesquisar associação..." oninput="filtrar(this, 'top100')">
+  </div>
   <div class="total-assoc" id="top100-total"></div>
-  <div id="top100-tabela">A carregar tabela...</div>
+  <div id="top100-tabela"></div>
 </section>
 
 <script>
 const SHEET_ID = "1V0pgh17X-6oQnZyZ1Wo8YiQBCadTXw5DK8YIGjtxzBI";
+const dadosCache = {};
 
-function mostrar(id, botao) {
-  document.querySelectorAll("section").forEach(sec =>
-    sec.classList.remove("active")
-  );
-
+function mostrar(id, btn) {
+  document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 
-  document.querySelectorAll("nav button").forEach(btn =>
-    btn.classList.remove("active")
-  );
+  document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
 
-  botao.classList.add("active");
-
-  /* SCROLL AUTOMÁTICO PARA O TOPO */
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-function carregarTabela(aba, containerId, totalId) {
+function carregarTabela(aba, containerId, totalId, chave) {
   fetch(`https://opensheet.elk.sh/${SHEET_ID}/${encodeURIComponent(aba)}`)
-    .then(res => res.json())
+    .then(r => r.json())
     .then(dados => {
-      if (!Array.isArray(dados)) throw new Error();
-
-      dados.sort((a, b) => Number(b.Pontos) - Number(a.Pontos));
-
-      document.getElementById(totalId).innerText =
-        `Total de associações nesta divisão: ${dados.length}`;
-
-      let html = `
-        <table>
-          <tr>
-            <th>Posição</th>
-            <th>Associação</th>
-            <th>Tag</th>
-            <th>Pontos</th>
-          </tr>
-      `;
-
-      dados.forEach((linha, index) => {
-        let classe = "";
-
-        if (index === 0) classe = "top-1";
-        else if (index === 1) classe = "top-2";
-        else if (index === 2) classe = "top-3";
-
-        if (
-          linha.Associacao &&
-          linha.Associacao.trim().toUpperCase().startsWith("GEA")
-        ) {
-          classe += " oficial-gea";
-        }
-
-        html += `
-          <tr class="${classe}">
-            <td>${index + 1}</td>
-            <td>${linha.Associacao}</td>
-            <td>${linha.Tag || ""}</td>
-            <td>${linha.Pontos}</td>
-          </tr>
-        `;
-      });
-
-      html += "</table>";
-      document.getElementById(containerId).innerHTML = html;
-    })
-    .catch(() => {
-      document.getElementById(containerId).innerHTML =
-        "Erro ao carregar tabela.";
+      dadosCache[chave] = dados;
+      renderTabela(dados, containerId, totalId, chave);
     });
+}
+
+function renderTabela(dados, containerId, totalId, chave) {
+  document.getElementById(totalId).innerText =
+    `Total de associações nesta divisão: ${dados.length}`;
+
+  let html = `
+    <table>
+      <tr>
+        <th>Posição</th>
+        <th>Associação</th>
+        <th>Tag</th>
+        <th>Pontos</th>
+      </tr>
+  `;
+
+  dados.forEach((linha, index) => {
+    const posicaoReal = linha.Posicao ? Number(linha.Posicao) : index + 1;
+
+    let classe = "";
+    if (posicaoReal === 1) classe = "top-1";
+    else if (posicaoReal === 2) classe = "top-2";
+    else if (posicaoReal === 3) classe = "top-3";
+
+    if (
+      linha.Associacao &&
+      linha.Associacao.trim().toUpperCase().startsWith("GEA")
+    ) {
+      classe += " oficial-gea";
+    }
+
+    html += `
+      <tr class="${classe}">
+        <td>${posicaoReal}</td>
+        <td>${linha.Associacao}</td>
+        <td>${linha.Tag || ""}</td>
+        <td>${linha.Pontos}</td>
+      </tr>
+    `;
+  });
+
+  html += "</table>";
+  document.getElementById(containerId).innerHTML = html;
+}
+
+function filtrar(input, chave) {
+  const termo = input.value.toLowerCase();
+  const filtrados = dadosCache[chave].filter(l =>
+    l.Associacao.toLowerCase().includes(termo)
+  );
+
+  const map = {
+    suprema: ["suprema-tabela", "suprema-total"],
+    diamante: ["diamante-tabela", "diamante-total"],
+    top100: ["top100-tabela", "top100-total"]
+  };
+
+  renderTabela(filtrados, ...map[chave], chave);
 }
 
 function carregarData() {
   fetch(`https://opensheet.elk.sh/${SHEET_ID}/Info`)
-    .then(res => res.json())
-    .then(dados => {
-      if (Array.isArray(dados) && dados.length > 0) {
-        document.getElementById("data-atualizacao").innerText =
-          "Última atualização: " + dados[0].Atualizacao;
-      } else {
-        document.getElementById("data-atualizacao").innerText =
-          "Última atualização: indisponível";
-      }
-    })
-    .catch(() => {
+    .then(r => r.json())
+    .then(d =>
       document.getElementById("data-atualizacao").innerText =
-        "Última atualização: indisponível";
-    });
+        "Última atualização: " + (d[0]?.Atualizacao || "indisponível")
+    );
 }
 
-carregarTabela("Suprema", "suprema-tabela", "suprema-total");
-carregarTabela("Diamante", "diamante-tabela", "diamante-total");
-carregarTabela("Top100_API", "top100-tabela", "top100-total");
+carregarTabela("Suprema", "suprema-tabela", "suprema-total", "suprema");
+carregarTabela("Diamante", "diamante-tabela", "diamante-total", "diamante");
+carregarTabela("Top100_API", "top100-tabela", "top100-total", "top100");
 carregarData();
 </script>
 
