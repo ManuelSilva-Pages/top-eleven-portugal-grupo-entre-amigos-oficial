@@ -57,23 +57,47 @@
       cursor: pointer;
       font-size: 14px;
       border-radius: 6px;
+      transition: all 0.25s ease;
     }
 
     .btn-suprema { background-color: #1e3a8a; }
     .btn-diamante { background-color: #ec4899; }
-    .btn-top100 { background-color: #1e3a8a; }
 
-    nav button:hover {
-      opacity: 0.9;
+    .btn-top100 {
+      background: linear-gradient(135deg, #facc15, #eab308, #ca8a04);
+      color: #1f2933;
+      font-weight: bold;
+    }
+
+    nav button.active {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      opacity: 1;
+    }
+
+    nav button:not(.active) {
+      opacity: 0.85;
     }
 
     section {
       display: none;
       padding: 20px;
+      animation: fadeSlide 0.35s ease;
     }
 
     section.active {
       display: block;
+    }
+
+    @keyframes fadeSlide {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .total-assoc {
@@ -98,27 +122,16 @@
       background-color: #e5e7eb;
     }
 
-    /* TOP 3 MELHORADO */
-    .top-1 {
-      background-color: #ffd700;
+    /* TOP 3 */
+    .top-1, .top-2, .top-3 {
       font-weight: bold;
       font-size: 15px;
       box-shadow: inset 0 0 6px rgba(0,0,0,0.25);
     }
 
-    .top-2 {
-      background-color: #c0c0c0;
-      font-weight: bold;
-      font-size: 15px;
-      box-shadow: inset 0 0 6px rgba(0,0,0,0.25);
-    }
-
-    .top-3 {
-      background-color: #cd7f32;
-      font-weight: bold;
-      font-size: 15px;
-      box-shadow: inset 0 0 6px rgba(0,0,0,0.25);
-    }
+    .top-1 { background-color: #ffd700; }
+    .top-2 { background-color: #c0c0c0; }
+    .top-3 { background-color: #cd7f32; }
 
     /* ASSOCIAÇÕES GEA */
     .oficial-gea td {
@@ -159,9 +172,9 @@
 </header>
 
 <nav>
-  <button class="btn-suprema" onclick="mostrar('suprema')">Suprema</button>
-  <button class="btn-diamante" onclick="mostrar('diamante')">Diamante</button>
-  <button class="btn-top100" onclick="mostrar('top100')">Top 100</button>
+  <button class="btn-suprema active" onclick="mostrar('suprema', this)">Suprema</button>
+  <button class="btn-diamante" onclick="mostrar('diamante', this)">Diamante</button>
+  <button class="btn-top100" onclick="mostrar('top100', this)">Top 100</button>
 </nav>
 
 <section id="suprema" class="active">
@@ -185,11 +198,24 @@
 <script>
 const SHEET_ID = "1V0pgh17X-6oQnZyZ1Wo8YiQBCadTXw5DK8YIGjtxzBI";
 
-function mostrar(id) {
-  document.querySelectorAll("section").forEach(sec => {
-    sec.classList.remove("active");
-  });
+function mostrar(id, botao) {
+  document.querySelectorAll("section").forEach(sec =>
+    sec.classList.remove("active")
+  );
+
   document.getElementById(id).classList.add("active");
+
+  document.querySelectorAll("nav button").forEach(btn =>
+    btn.classList.remove("active")
+  );
+
+  botao.classList.add("active");
+
+  /* SCROLL AUTOMÁTICO PARA O TOPO */
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
 }
 
 function carregarTabela(aba, containerId, totalId) {
