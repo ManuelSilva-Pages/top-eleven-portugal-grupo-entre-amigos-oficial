@@ -1,315 +1,273 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <title>Top Eleven Portugal – Ranking Oficial</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Top Eleven Portugal – Ranking Oficial</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background-color: #f4f4f4;
-    }
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background-color: #f4f4f4;
+}
 
-    header {
-      background-color: #1f2933;
-      color: white;
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
+header {
+  background-color: #1f2933;
+  color: white;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
 
-    header img {
-      height: 80px;
-    }
+header img { height: 80px; }
 
-    header h1 {
-      margin: 0;
-      font-size: 24px;
-    }
+header h1 { margin: 0; font-size: 24px; }
 
-    header p {
-      margin: 5px 0 0;
-      font-size: 14px;
-      opacity: 0.9;
-    }
+header p {
+  margin: 5px 0 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
 
-    #data-atualizacao {
-      font-size: 13px;
-      opacity: 0.85;
-      margin-top: 4px;
-    }
+#data-atualizacao {
+  font-size: 13px;
+  opacity: 0.85;
+  margin-top: 4px;
+}
 
-    nav {
-      background-color: #ffffff;
-      padding: 10px;
-      display: flex;
-      gap: 10px;
-      border-bottom: 1px solid #ddd;
-    }
+nav {
+  background-color: #ffffff;
+  padding: 10px;
+  display: flex;
+  gap: 10px;
+  border-bottom: 1px solid #ddd;
+}
 
-    nav button {
-      padding: 10px 16px;
-      border: none;
-      color: white;
-      cursor: pointer;
-      font-size: 14px;
-      border-radius: 6px;
-      transition: all 0.3s ease;
-    }
+nav button {
+  padding: 10px 16px;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+}
 
-    .btn-suprema { background-color: #1e3a8a; }
-    .btn-diamante { background-color: #ec4899; }
+/* BOTÕES */
+.btn-suprema { background-color: #1e3a8a; }
+.btn-diamante { background-color: #ec4899; }
+.btn-top100 {
+  background: linear-gradient(135deg, #ae8625, #f7ef8a, #d2ac47, #edc967);
+  color: #78350f;
+  font-weight: bold;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4),
+              0 3px 6px rgba(0,0,0,0.25);
+}
 
-    .btn-top100 {
-      background: linear-gradient(135deg, #facc15, #ca8a04);
-      color: #1f2933;
-      font-weight: bold;
-    }
+nav button.ativo {
+  outline: 3px solid rgba(0,0,0,0.2);
+  transform: scale(1.04);
+}
 
-    nav button.active {
-      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.25);
-      transform: translateY(-1px);
-    }
+section {
+  display: none;
+  padding: 20px;
+  animation: fade 0.35s ease;
+}
 
-    section {
-      display: none;
-      padding: 20px;
-      animation: fade 0.3s ease;
-    }
+section.active { display: block; }
 
-    section.active {
-      display: block;
-    }
+@keyframes fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-    @keyframes fade {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+.total-assoc {
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #374151;
+}
 
-    .search-box {
-      margin-bottom: 10px;
-    }
+input.pesquisa {
+  padding: 8px;
+  width: 100%;
+  max-width: 320px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 6px;
+}
 
-    .search-box input {
-      width: 100%;
-      max-width: 300px;
-      padding: 8px 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
+.sem-resultados {
+  display: none;
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #fef3c7;
+  border-left: 6px solid #f59e0b;
+  color: #92400e;
+  font-weight: bold;
+  border-radius: 6px;
+}
 
-    .total-assoc {
-      margin: 10px 0;
-      font-weight: bold;
-      color: #374151;
-    }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-    }
+th, td {
+  padding: 8px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
 
-    th, td {
-      padding: 8px;
-      border: 1px solid #ccc;
-      text-align: center;
-    }
+th { background-color: #e5e7eb; }
 
-    th {
-      background-color: #e5e7eb;
-    }
+/* TOP 3 */
+.top-1 { background-color: #ffd700; font-weight: bold; }
+.top-2 { background-color: #c0c0c0; font-weight: bold; }
+.top-3 { background-color: #cd7f32; font-weight: bold; }
 
-    /* TOP 3 */
-    .top-1 {
-      background-color: #ffd700;
-      font-weight: bold;
-      font-size: 15px;
-      box-shadow: inset 0 0 6px rgba(0,0,0,0.25);
-    }
+/* GEA */
+.oficial-gea td {
+  border-left: 6px solid #16a34a;
+  background-color: #ecfdf5;
+}
 
-    .top-2 {
-      background-color: #c0c0c0;
-      font-weight: bold;
-      font-size: 15px;
-      box-shadow: inset 0 0 6px rgba(0,0,0,0.25);
-    }
-
-    .top-3 {
-      background-color: #cd7f32;
-      font-weight: bold;
-      font-size: 15px;
-      box-shadow: inset 0 0 6px rgba(0,0,0,0.25);
-    }
-
-    /* GEA */
-    .oficial-gea td {
-      border-left: 6px solid #16a34a;
-      background-color: #ecfdf5;
-    }
-
-    @media (max-width: 768px) {
-      header {
-        flex-direction: column;
-        text-align: center;
-      }
-
-      header img {
-        height: 60px;
-      }
-
-      nav {
-        flex-direction: column;
-      }
-
-      table {
-        font-size: 14px;
-      }
-    }
-  </style>
+@media (max-width: 768px) {
+  header { flex-direction: column; text-align: center; }
+  nav { flex-direction: column; }
+}
+</style>
 </head>
 
 <body>
 
 <header>
-  <img src="logo.png" alt="Top Eleven Portugal">
-  <div>
-    <h1>Top Eleven Portugal</h1>
-    <p>Ranking oficial do grupo Top Eleven Portugal - Grupo Entre Amigos [OFICIAL]</p>
-    <div id="data-atualizacao">Última atualização: a carregar...</div>
-  </div>
+<img src="logo.png">
+<div>
+<h1>Top Eleven Portugal</h1>
+<p>Ranking oficial do grupo Top Eleven Portugal - Grupo Entre Amigos [OFICIAL]</p>
+<div id="data-atualizacao">Última atualização: a carregar...</div>
+</div>
 </header>
 
 <nav>
-  <button class="btn-suprema active" onclick="mostrar('suprema', this)">Suprema</button>
-  <button class="btn-diamante" onclick="mostrar('diamante', this)">Diamante</button>
-  <button class="btn-top100" onclick="mostrar('top100', this)">Top 100</button>
+<button class="btn-suprema ativo" onclick="mostrar('suprema',this)">Suprema</button>
+<button class="btn-diamante" onclick="mostrar('diamante',this)">Diamante</button>
+<button class="btn-top100" onclick="mostrar('top100',this)">Top 100</button>
 </nav>
 
 <section id="suprema" class="active">
-  <h2>Divisão Suprema</h2>
-  <div class="search-box">
-    <input type="text" placeholder="Pesquisar associação..." oninput="filtrar(this, 'suprema')">
-  </div>
-  <div class="total-assoc" id="suprema-total"></div>
-  <div id="suprema-tabela"></div>
+<h2>Divisão Suprema</h2>
+<div class="total-assoc" id="suprema-total"></div>
+<input class="pesquisa" placeholder="Pesquisar associação ou tag" oninput="filtrar(this,'suprema')">
+<div class="sem-resultados" id="suprema-sem">🔍 Nenhuma associação encontrada</div>
+<div id="suprema-tabela"></div>
 </section>
 
 <section id="diamante">
-  <h2>Divisão Diamante</h2>
-  <div class="search-box">
-    <input type="text" placeholder="Pesquisar associação..." oninput="filtrar(this, 'diamante')">
-  </div>
-  <div class="total-assoc" id="diamante-total"></div>
-  <div id="diamante-tabela"></div>
+<h2>Divisão Diamante</h2>
+<div class="total-assoc" id="diamante-total"></div>
+<input class="pesquisa" placeholder="Pesquisar associação ou tag" oninput="filtrar(this,'diamante')">
+<div class="sem-resultados" id="diamante-sem">🔍 Nenhuma associação encontrada</div>
+<div id="diamante-tabela"></div>
 </section>
 
 <section id="top100">
-  <h2>Top 100 Associações</h2>
-  <div class="search-box">
-    <input type="text" placeholder="Pesquisar associação..." oninput="filtrar(this, 'top100')">
-  </div>
-  <div class="total-assoc" id="top100-total"></div>
-  <div id="top100-tabela"></div>
+<h2>Top 100 Associações</h2>
+<div class="total-assoc" id="top100-total"></div>
+<input class="pesquisa" placeholder="Pesquisar associação ou tag" oninput="filtrar(this,'top100')">
+<div class="sem-resultados" id="top100-sem">🔍 Nenhuma associação encontrada</div>
+<div id="top100-tabela"></div>
 </section>
 
 <script>
 const SHEET_ID = "1V0pgh17X-6oQnZyZ1Wo8YiQBCadTXw5DK8YIGjtxzBI";
-const dadosCache = {};
 
 function mostrar(id, btn) {
   document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
-
-  document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-
+  document.querySelectorAll("nav button").forEach(b => b.classList.remove("ativo"));
+  btn.classList.add("ativo");
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-function carregarTabela(aba, containerId, totalId, chave) {
-  fetch(`https://opensheet.elk.sh/${SHEET_ID}/${encodeURIComponent(aba)}`)
+function carregarTabela(aba, tabelaId, totalId, usarPosicaoFicheiro=false) {
+  fetch(`https://opensheet.elk.sh/${SHEET_ID}/${aba}`)
     .then(r => r.json())
     .then(dados => {
-      dadosCache[chave] = dados;
-      renderTabela(dados, containerId, totalId, chave);
-    });
-}
 
-function renderTabela(dados, containerId, totalId, chave) {
-  document.getElementById(totalId).innerText =
-    `Total de associações nesta divisão: ${dados.length}`;
+      document.getElementById(totalId).innerText =
+        `Total de associações nesta divisão: ${dados.length}`;
 
-  let html = `
-    <table>
-      <tr>
+      let html = `<table><tr>
         <th>Posição</th>
         <th>Associação</th>
         <th>Tag</th>
         <th>Pontos</th>
-      </tr>
-  `;
+      </tr>`;
 
-  dados.forEach((linha, index) => {
-    const posicaoReal = linha.Posicao ? Number(linha.Posicao) : index + 1;
+      dados.forEach((l, i) => {
+        const posicao = usarPosicaoFicheiro ? l.Posicao : i + 1;
+        let classe = (!usarPosicaoFicheiro && i < 3) ? `top-${i+1}` : "";
 
-    let classe = "";
-    if (posicaoReal === 1) classe = "top-1";
-    else if (posicaoReal === 2) classe = "top-2";
-    else if (posicaoReal === 3) classe = "top-3";
+        if (l.Associacao?.trim().toUpperCase().startsWith("GEA")) {
+          classe += " oficial-gea";
+        }
 
-    if (
-      linha.Associacao &&
-      linha.Associacao.trim().toUpperCase().startsWith("GEA")
-    ) {
-      classe += " oficial-gea";
-    }
+        const nomeNormalizado = (l.Associacao || "").toLowerCase();
+        const tagNormalizada  = (l.Tag || "").toLowerCase().replace("#","");
 
-    html += `
-      <tr class="${classe}">
-        <td>${posicaoReal}</td>
-        <td>${linha.Associacao}</td>
-        <td>${linha.Tag || ""}</td>
-        <td>${linha.Pontos}</td>
-      </tr>
-    `;
-  });
+        html += `
+        <tr class="${classe}"
+            data-nome="${nomeNormalizado}"
+            data-tag="${tagNormalizada}">
+          <td>${posicao}</td>
+          <td>${l.Associacao}</td>
+          <td>${l.Tag || ""}</td>
+          <td>${l.Pontos}</td>
+        </tr>`;
+      });
 
-  html += "</table>";
-  document.getElementById(containerId).innerHTML = html;
+      document.getElementById(tabelaId).innerHTML = html + "</table>";
+    });
 }
 
-function filtrar(input, chave) {
-  const termo = input.value.toLowerCase();
-  const filtrados = dadosCache[chave].filter(l =>
-    l.Associacao.toLowerCase().includes(termo)
-  );
+function filtrar(input, sec) {
+  const termo = input.value.toLowerCase().replace("#","").trim();
+  const linhas = document.querySelectorAll(`#${sec} table tr[data-nome]`);
+  let visiveis = 0;
 
-  const map = {
-    suprema: ["suprema-tabela", "suprema-total"],
-    diamante: ["diamante-tabela", "diamante-total"],
-    top100: ["top100-tabela", "top100-total"]
-  };
+  linhas.forEach(linha => {
+    const nome = linha.dataset.nome;
+    const tag  = linha.dataset.tag;
 
-  renderTabela(filtrados, ...map[chave], chave);
+    const corresponde =
+      nome.includes(termo) ||
+      tag.includes(termo);
+
+    linha.style.display = corresponde ? "" : "none";
+    if (corresponde) visiveis++;
+  });
+
+  document.getElementById(`${sec}-sem`).style.display =
+    visiveis === 0 ? "block" : "none";
 }
 
 function carregarData() {
   fetch(`https://opensheet.elk.sh/${SHEET_ID}/Info`)
     .then(r => r.json())
-    .then(d =>
+    .then(d => {
       document.getElementById("data-atualizacao").innerText =
-        "Última atualização: " + (d[0]?.Atualizacao || "indisponível")
-    );
+        "Última atualização: " + (d[0]?.Atualizacao || "indisponível");
+    });
 }
 
-carregarTabela("Suprema", "suprema-tabela", "suprema-total", "suprema");
-carregarTabela("Diamante", "diamante-tabela", "diamante-total", "diamante");
-carregarTabela("Top100_API", "top100-tabela", "top100-total", "top100");
+carregarTabela("Suprema", "suprema-tabela", "suprema-total");
+carregarTabela("Diamante", "diamante-tabela", "diamante-total");
+carregarTabela("Top100_API", "top100-tabela", "top100-total", true);
 carregarData();
 </script>
 
